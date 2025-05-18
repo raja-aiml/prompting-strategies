@@ -1,6 +1,6 @@
 ### Code Generation Prompts
 
-**Goal:** Elicit new code snippets or functions from the model with clear requirements.
+**Definition:** Eliciting new code snippets or functions from the model with clear requirements.
 
 **Prompt Template:**
 ```
@@ -16,3 +16,15 @@ Write Python code that takes a list of numbers and returns the list sorted in de
 - Specify the programming language and version
 - Mention any libraries or frameworks that should be used
 - Provide edge cases or constraints if relevant
+
+**Best For:**
+- Automating repetitive code patterns
+- Generating boilerplate across multiple languages
+
+**Limitations:**
+- May produce insecure or inefficient code if instructions are vague
+- Generated code often requires human review
+
+**Advantages:**
+- Speeds up prototyping and development
+- Useful for learning unfamiliar languages

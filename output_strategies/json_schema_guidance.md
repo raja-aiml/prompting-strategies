@@ -29,3 +29,11 @@ Provide user information in the schema:
 **Tips:**
 - Validate outputs against the schema during testing
 - Keep schemas simple to reduce model confusion
+
+**Limitations:**
+- Strict schemas may cause the model to omit nuanced information
+- Overly complex structures can confuse the model
+
+**Advantages:**
+- Ensures outputs are easy to parse programmatically
+- Reduces the likelihood of malformed JSON

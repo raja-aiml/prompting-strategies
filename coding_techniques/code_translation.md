@@ -1,6 +1,6 @@
 ### Code Translation Prompts
 
-**Goal:** Convert code from one programming language to another while preserving functionality.
+**Definition:** Converting code from one programming language to another while preserving functionality.
 
 **Prompt Template:**
 ```
@@ -19,3 +19,15 @@ function square(n) {
 **Tips:**
 - Indicate any differences in language idioms or libraries
 - Provide the entire code context when possible
+
+**Best For:**
+- Migrating legacy codebases to new languages
+- Learning how patterns translate across ecosystems
+
+**Limitations:**
+- Translated code may not follow idiomatic best practices
+- Incompatible language features can lead to incomplete translations
+
+**Advantages:**
+- Accelerates porting efforts
+- Helps compare syntax differences side by side
