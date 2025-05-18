@@ -1,5 +1,10 @@
+# Prompting Strategies
 
+This repository collects notes and examples on effective prompt engineering techniques. Each directory focuses on a specific aspect of working with language models.
 
+## Directory structure
+
+```text
 prompting-strategies/
 ├── README.md  # Central overview of prompt engineering concepts and directory guide
 ├── fundamentals/  # Core building blocks of effective prompt engineering
@@ -51,4 +56,5 @@ prompting-strategies/
 │   ├── rag_prompting.md  # Retrieval-augmented generation for knowledge enhancement
 │   └── hybrid_strategies.md  # Combining multiple prompting methods for complex tasks
 └── emerging_techniques/  # Experimental prompting methods
-   └── prompt_compression.md  # Creating more efficient, compact prompts
+    └── prompt_compression.md  # Creating more efficient, compact prompts
+```
