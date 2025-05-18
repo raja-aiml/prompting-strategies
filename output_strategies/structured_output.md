@@ -20,6 +20,10 @@ Create a table summarizing the planets of our solar system with columns for Name
 - Easier downstream processing
 - Helps prevent hallucinated structure
 
+**Limitations:**
+- May limit open-ended creativity
+- Requires more upfront design effort
+
 **Tips for Success:**
 - Explicitly describe the desired layout
 - Provide a short example if the format is unusual

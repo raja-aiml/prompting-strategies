@@ -19,3 +19,11 @@ List three benefits of regular exercise. Output format: bullet list.
 **Tips:**
 - State the format requirement explicitly
 - If the format is complex, include a brief example
+
+**Limitations:**
+- May reduce creativity if the format is too constrained
+- Additional instructions increase token count
+
+**Advantages:**
+- Promotes predictable structure for downstream processing
+- Works well with parsing tools or templates
