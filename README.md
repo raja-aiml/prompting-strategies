@@ -1,6 +1,8 @@
 # Prompting Strategies
 
-This repository collects notes and examples on effective prompt engineering techniques. Each directory focuses on a specific aspect of working with language models.
+This repository collects notes and examples on effective prompt engineering techniques. 
+
+Each directory focuses on a specific aspect of working with language models.
 
 ## Directory structure
 
