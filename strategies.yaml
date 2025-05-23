@@ -1,0 +1,698 @@
+framework:
+  title: Comprehensive Prompt Engineering Framework (Enhanced 2025)
+  version: "2.1"
+  
+  core_techniques:
+    must_include:
+      - Zero-shot Prompting
+      - Few-shot Prompting
+      - System Prompting
+      - Role Prompting
+      - Contextual Prompting
+      - Step-back Prompting
+      - Chain of Thought
+      - Self-Consistency
+      - Tree of Thoughts
+      - ReAct
+
+  layers:
+    - name: Core Foundation
+      description: "Fundamental building blocks for effective prompt engineering"
+      techniques:
+        - name: Zero-shot Prompting
+          purpose: Direct instruction without examples, relying on pre-trained knowledge
+          cost_profile: "Low (single prompt, minimal tokens)"
+          best_for: 
+            - Well-defined tasks within model capabilities
+            - Simple classification or generation
+            - Token-constrained scenarios
+          when_not_to_use:
+            - Novel formats model may not understand
+            - Complex reasoning problems
+            - Specific output structure requirements
+          template: |
+            [Task instruction]
+            
+            [Input]
+          example: |
+            Summarize the following article in three concise paragraphs that capture the main points.
+            
+            [Article text...]
+          success_tips:
+            - Be explicit about desired output format
+            - Include clear evaluation criteria
+            - Use concise language
+          notes:
+            - Uses model's pre-trained knowledge [cite: 84]
+            - Foundation for many other techniques [cite: 87]
+
+        - name: Few-shot Prompting
+          purpose: Learning from examples provided in the prompt
+          cost_profile: "Medium (longer prompts, multiple examples)"
+          cost_benefit_analysis: "High value for complex tasks, diminishing returns after 5-7 examples"
+          subtypes:
+            - name: One-shot
+              description: Single example demonstration
+              cost: "Low-Medium"
+              template: |
+                [Task instruction]
+                
+                Example:
+                Input: [example input]
+                Output: [example output]
+                
+                Now complete this:
+                Input: [actual input]
+                Output:
+            - name: Few-shot
+              description: Multiple examples (typically 3-5)
+              cost: "Medium"
+              template: |
+                [Task instruction]
+                
+                Example 1:
+                Input: [input example 1]
+                Output: [output example 1]
+                
+                Example 2:
+                Input: [input example 2]
+                Output: [output example 2]
+                
+                Now complete this:
+                Input: [actual input]
+                Output:
+          best_for:
+            - Establishing consistent output format
+            - Clarifying subjective judgment criteria
+            - Tasks with clear patterns
+          success_tips:
+            - Use diverse examples covering edge cases
+            - Order examples from simple to complex
+            - Mix up class order in classification tasks
+          notes:
+            - Builds context and demonstrates desired output structure [cite: 104]
+            - Crucial best practice: "Provide examples" [cite: 351]
+
+        - name: System Prompting
+          purpose: Behavior configuration and defining overall context/purpose
+          cost_profile: "Low (typically persistent across interactions)"
+          template: |
+            You are [desired persona]. Follow these rules:
+            1. [Guideline 1]
+            2. [Guideline 2]
+            ...
+          example: |
+            You are a concise assistant. Always answer in one short paragraph and avoid speculation.
+          best_for:
+            - Setting consistent behavior across sessions
+            - Safety and toxicity control
+            - Global output formatting rules
+          limitations:
+            - Instructions may be forgotten in very long conversations
+            - Conflicts between system and user messages can confuse model
+          success_tips:
+            - Keep system prompts short but explicit
+            - Restate critical guidelines for long conversations
+          notes:
+            - Controls tone, behavior, rules, output format [cite: 136, 142, 140]
+            - Useful for safety and toxicity control [cite: 149]
+
+    - name: Context Engineering
+      description: "Methods for establishing specific contexts and perspectives"
+      techniques:
+        - name: Role Prompting
+          purpose: Assigns specific character, persona, or identity for the LLM to adopt
+          cost_profile: "Low-Medium"
+          template: |
+            As an experienced [expert role], [task instruction]. Incorporate specialized knowledge typical of this role.
+          example: |
+            As an experienced cybersecurity analyst, review the following configuration and identify potential vulnerabilities.
+          model_performance_variations:
+            gpt_models: "Strong response to detailed role descriptions"
+            claude: "Excellent at maintaining consistent persona throughout conversation"
+            gemini: "Good at role-based reasoning, less consistent with creative personas"
+          best_for:
+            - Domain-specific tasks requiring expert knowledge
+            - Professional writing with field-specific conventions
+          limitations:
+            - May introduce unwanted bias from chosen role
+            - Not ideal when multiple perspectives required
+          success_tips:
+            - Specify role clearly, including expertise level
+            - Provide relevant context the expert would consider
+          notes:
+            - Influences tone, style, and focused expertise [cite: 161]
+
+        - name: Contextual Prompting
+          purpose: Provides specific details, background information, or situational constraints
+          cost_profile: "Variable (can significantly increase token usage with large contexts)"
+          template: |
+            Context information:
+            [background text]
+            
+            Question: [user query]
+          example: |
+            Context information:
+            - Product: WidgetPro 2.0
+            - Key features: longer battery life, waterproof design
+            
+            Question: Write a short advertisement for this product.
+          best_practices:
+            - Prioritize most relevant context first
+            - Use structured formats for complex contexts
+            - Place critical context near beginning of prompt
+          best_for:
+            - Model lacks necessary background knowledge
+            - Keeping long-running conversations consistent
+          limitations:
+            - Consumes token budget significantly
+            - Context must be relevant and concise
+          notes:
+            - Helps model understand nuances and tailor responses [cite: 126]
+            - Can be dynamic and task-specific [cite: 133]
+
+        - name: Analogy-based Prompting
+          purpose: Explaining complex or abstract ideas by comparing to familiar concepts
+          cost_profile: "Low-Medium"
+          template: |
+            Explain [complex concept] as if it were [familiar concept or scenario]. Highlight how the elements correspond.
+          example: |
+            Explain how the blockchain works as if it were a shared village ledger.
+          best_for:
+            - Technical communication to non-experts
+            - Educational explanations
+            - Making abstract topics concrete
+          limitations:
+            - Analogy might introduce misconceptions if stretched too far
+            - Not ideal when precise terminology required
+          success_tips:
+            - Choose analogies familiar to your audience
+            - Explicitly map each piece of analogy to real concept
+
+    - name: Reasoning Architecture
+      description: "Structured approaches to enhance model reasoning capabilities"
+      techniques:
+        - name: Step-back Prompting
+          purpose: Improves reasoning by considering general questions before specific tasks
+          cost_profile: "Medium (additional reasoning step)"
+          template: |
+            [Problem statement]
+            
+            Before answering, take a step back and consider:
+            1. What is the broader context of this problem?
+            2. What general principles or frameworks apply here?
+            3. What assumptions might be incorrect?
+            
+            After this reflection, solve the problem.
+          failure_modes:
+            - "Over-generalization: Can lead to irrelevant broad discussions"
+            - "Relevance drift: Stepping back too far from original question"
+          diagnostics: "Monitor for relevance to original question; check if reflection adds value"
+          best_for:
+            - Strategic decisions and high-level analysis
+            - Avoiding tunnel vision on complex issues
+          notes:
+            - Activates relevant background knowledge and principles [cite: 171]
+            - Useful for critical thinking and mitigating biases [cite: 173, 175]
+
+        - name: Chain of Thought (CoT)
+          purpose: Improves reasoning by generating intermediate steps leading to final answer
+          cost_profile: "Medium-High (longer outputs, more compute)"
+          pattern: "Let's think step by step."
+          template: |
+            [Problem statement]
+            
+            Think through this problem step by step to find the correct answer.
+          model_performance_comparison:
+            gpt4: "Excellent at complex multi-step reasoning"
+            claude: "Strong logical consistency, good at catching errors"
+            smaller_models: "May struggle with long reasoning chains"
+          common_failure_modes:
+            - reasoning_drift: "Steps become less relevant to original question"
+            - circular_reasoning: "Getting stuck in logical loops"
+            - premature_conclusions: "Skipping necessary intermediate steps"
+          diagnostics: "Check if each step logically follows; verify final answer alignment"
+          best_for:
+            - Mathematical reasoning and logic puzzles
+            - Multi-step analytical problems
+          when_not_to_use:
+            - Simple factual queries
+            - Creative generation tasks
+            - When token efficiency is critical
+          best_practices:
+            - Set temperature to 0 for single correct reasoning path [cite: 438, 439]
+            - Ensure answer follows reasoning steps [cite: 436]
+            - Request labeled steps or numbered reasoning
+          notes:
+            - Enhances interpretability and improves robustness [cite: 194, 196]
+            - Can be combined with few-shot prompting [cite: 192]
+
+        - name: Self-Consistency
+          purpose: Enhances reliability through multiple reasoning paths and majority vote selection
+          cost_profile: "High (multiple generations, 3-10x base cost)"
+          cost_benefit_decision_matrix:
+            high_stakes_decisions: "Worth the cost"
+            creative_tasks: "Usually not cost-effective"
+            mathematical_problems: "High value"
+            simple_classification: "Overkill"
+          template: |
+            [Problem statement]
+            
+            Generate 5 independent solutions to this problem without referring to previous solutions. Then identify the most consistent answer and explain why it's likely correct.
+          implementation: "Generate 5-10 responses, select by majority vote"
+          best_for:
+            - High-stakes decisions requiring reliability
+            - Problems with potential for error
+            - Mathematical or logical questions with verifiable answers
+          limitations:
+            - Not suited for creative tasks with no single right answer
+            - Consumes significantly more tokens
+          success_tips:
+            - Request distinct approaches for each attempt
+            - Use odd number of solutions to avoid ties
+          notes:
+            - Improves accuracy and coherence over simple greedy decoding [cite: 224]
+            - Involves multiple generation steps, increasing cost [cite: 224]
+
+        - name: Tree of Thoughts (ToT)
+          purpose: Explore multiple reasoning paths simultaneously in tree structure
+          cost_profile: "Very High (exponential with tree depth)"
+          template: |
+            [Problem statement]
+            
+            Consider multiple approaches to solving this problem:
+            1. First explore approach A...
+            2. Then explore approach B...
+            3. Finally explore approach C...
+            
+            For each approach, evaluate its merits and limitations. Then select the most promising approach and use it to solve the problem.
+          best_for:
+            - Complex problem-solving requiring exploration
+            - Scenarios with multiple valid solution paths
+            - Problems requiring comparison of approaches
+          when_not_to_use:
+            - Simple tasks with obvious solution methods
+            - Tight budget constraints
+            - Real-time applications
+            - When limited by token context window
+          success_tips:
+            - Explicitly define how to evaluate each approach
+            - Ensure branches are distinct and meaningfully different
+            - Request explicit comparison of pros/cons
+          notes:
+            - Model can branch out, evaluate intermediate thoughts, and prune less promising paths [cite: 245]
+            - Suited for complex tasks requiring exploration and deliberate problem-solving [cite: 243, 247]
+
+        - name: ReAct Framework
+          purpose: Synergizes reasoning with external tool usage for complex problem solving
+          cost_profile: "Variable (depends on tool usage and iteration cycles)"
+          pattern: "Thought → Action (tool use) → Observation → Repeat until solution"
+          template: |
+            To solve this problem, alternate between:
+            1. Thought: Reason about the current state and next step
+            2. Action: Perform a specific operation
+            3. Observation: Note the result of the action
+            4. Repeat until you reach a conclusion
+            
+            [Problem statement]
+          common_failure_modes:
+            tool_selection_errors: "Using wrong tool for task"
+            infinite_loops: "Repeating same unsuccessful actions"
+            context_loss: "Forgetting previous observations"
+          diagnostics: "Monitor action diversity, track progress toward goal"
+          best_for:
+            - Tasks requiring tool use or external information
+            - Multi-step information gathering
+            - Complex planning scenarios
+          limitations:
+            - Overkill for simple, one-step queries
+            - Requires careful separation of thoughts and actions
+          success_tips:
+            - Be specific about allowed actions
+            - Include clear stopping conditions
+          notes:
+            - Mimics human problem-solving by combining verbal reasoning with information gathering [cite: 249]
+            - Requires careful setup and handling of previous prompts/responses [cite: 273]
+
+    - name: Output Engineering
+      description: "Techniques for controlling response structure and format"
+      techniques:
+        - name: Structured Output Specification
+          purpose: Guiding LLM to produce output in predictable, parseable format
+          formats: ["JSON", "XML", "Markdown", "Table", "Custom Formats"]
+          template: |
+            [Task instruction specifying the desired format]
+          model_performance_comparison:
+            json_compliance: "GPT-4 > Claude > Gemini for complex schemas"
+            xml_handling: "Generally good across models"
+            custom_formats: "Varies significantly by complexity"
+          best_for:
+            - Applications requiring predictable formatting
+            - Data extraction or transformation tasks
+          success_tips:
+            - Explicitly describe desired layout
+            - Provide short example if format is unusual
+          notes:
+            - "Be specific about the output" is key best practice [cite: 364]
+            - JSON can enforce structure and limit hallucinations [cite: 414]
+
+        - name: JSON Schema Guidance
+          purpose: Using JSON Schema to define expected structure and data types
+          cost_profile: "Low-Medium (schema definition overhead)"
+          template: |
+            Respond in JSON using the following schema:
+            {
+              "field1": "string",
+              "field2": "integer",
+              ...
+            }
+          input_benefits:
+            - "Helps LLM understand data structure [cite: 425]"
+            - "Focus on relevant info [cite: 426]"
+            - "Establish relationships [cite: 427, 428]"
+          output_benefits:
+            - "Guides conforming generation [cite: 145]"
+            - "Ensures parseable output"
+          failure_modes:
+            - "Schema violations with complex nested structures"
+            - "Model confusion with overly complex schemas"
+          diagnostics: "Validate output against schema programmatically"
+          best_for:
+            - Integrations requiring machine-readable output
+            - Preventing parsing errors
+          notes:
+            - Benefits include: consistent style, data focus, type awareness, sortability [cite: 413, 414]
+
+        - name: JSON Repair
+          purpose: Handling potentially malformed JSON output from LLMs
+          tools: ["json-repair library (Python)"]
+          when_needed:
+            - "Token limit truncation [cite: 419, 420]"
+            - "Complex nested structures"
+          approach: |
+            1. Detect whether JSON can be parsed
+            2. Attempt common fixes (closing braces, quoting keys)
+            3. Revalidate and regenerate if necessary
+          notes:
+            - Useful when JSON output is abruptly cut off due to token limits [cite: 419, 420]
+
+    - name: Implementation Strategy
+      description: "Practical application and optimization techniques"
+      techniques:
+        - name: LLM Output Configuration
+          purpose: Adjusting model parameters to control output generation
+          parameters:
+            max_tokens:
+              description: "Controls number of tokens generated"
+              impact: "Affects cost, speed, and potential truncation [cite: 32, 33, 35]"
+            temperature:
+              description: "Controls randomness in generation"
+              values:
+                0: "Deterministic (greedy decoding) [cite: 43]"
+                0.7_1.0: "Creative/diverse output"
+                extreme_values: "Can cause repetition loops [cite: 77, 78, 79, 80]"
+            top_k:
+              description: "Restricts sampling to K most likely tokens [cite: 51, 53]"
+            top_p:
+              description: "Nucleus sampling - restricts to tokens with cumulative probability > P [cite: 51, 57]"
+          cost_optimization:
+            - "Lower max tokens for simple tasks"
+            - "Adjust temperature based on deterministic vs creative needs"
+          notes:
+            - Settings interact and optimal values depend on task [cite: 60, 61]
+            - Extreme settings can render others irrelevant [cite: 67, 69, 72]
+
+        - name: Variables in Prompts
+          purpose: Making prompts dynamic and reusable through placeholders
+          cost_benefit: "Reduces development time, enables scaling"
+          template: |
+            Generate a short description of {{product_name}} highlighting its main benefit: {{benefit}}.
+          example: "Tell me a fact about the city: {city} [cite: 395]"
+          benefits:
+            - "Saves effort, avoids repetition [cite: 393]"
+            - "Useful for application integration [cite: 394]"
+          best_practices:
+            - "Clearly delineate variables with markers like {{variable}}"
+            - "Document variable types and expected formats"
+
+        - name: Model-Specific Optimization Guidelines
+          purpose: Tailoring prompts to specific model capabilities
+          model_profiles:
+            gpt_models:
+              strengths: ["Complex reasoning", "Code generation", "Following detailed instructions"]
+              weaknesses: ["Can be verbose", "Sometimes overconfident"]
+              optimization: ["Use system prompts for brevity", "Explicit format requirements"]
+            claude_models:
+              strengths: ["Nuanced understanding", "Ethical reasoning", "Balanced responses"]
+              weaknesses: ["Can be overly cautious", "Sometimes refuses valid requests"]
+              optimization: ["Clear context about legitimate use cases", "Structured role definitions"]
+            gemini_models:
+              strengths: ["Multimodal capabilities", "Factual accuracy", "Efficiency"]
+              weaknesses: ["Less creative", "Can be rigid with instructions"]
+              optimization: ["Explicit examples", "Clear success criteria"]
+            smaller_local_models:
+              strengths: ["Cost-effective", "Privacy", "Customizable"]
+              weaknesses: ["Limited reasoning", "Context length", "Instruction following"]
+              optimization: ["Simpler prompts", "More examples", "Explicit formatting"]
+          notes:
+            - Prompts may need optimization for different models [cite: 27, 408]
+            - Stay updated on model architecture and features [cite: 408]
+
+        - name: Evaluation Framework
+          purpose: Systematic assessment of prompt effectiveness
+          automated_metrics:
+            accuracy: "For classification/extraction tasks"
+            rouge_bleu: "For text generation quality"
+            schema_compliance: "For structured outputs"
+            latency: "Response time measurements"
+            cost_per_task: "Token usage tracking"
+          human_evaluation:
+            relevance: "Does output address the query?"
+            coherence: "Is reasoning logical and consistent?"
+            completeness: "Are all requirements met?"
+            safety: "Any harmful or inappropriate content?"
+          ab_testing_framework:
+            - "Control vs experimental prompts"
+            - "Statistical significance testing"
+            - "Performance tracking over time"
+          success_metrics_dashboard:
+            performance: "Accuracy, completeness, relevance scores"
+            efficiency: "Cost per task, response latency, iteration cycles"
+            reliability: "Consistency across runs, failure rate, error types"
+            business_impact: "User satisfaction, task completion rate, ROI"
+
+        - name: Documentation & Iteration Methods
+          purpose: Systematic tracking of prompt development and results
+          tracking_elements:
+            - "Name, Goal, Model, Configuration, Prompt, Output, Feedback, Version [cite: 445-458]"
+            - "Cost per iteration, performance metrics"
+            - "Failure modes encountered and solutions"
+          methods:
+            - "Detailed tracking sheet (Google Sheet format recommended) [cite: 447, 458]"
+            - "Version control for prompts"
+            - "A/B testing results documentation"
+          notes:
+            - Prompt engineering is iterative: craft, test, analyze, document, refine [cite: 11, 454, 455]
+
+        - name: Instructions over Constraints
+          purpose: Guiding model by positive instructions rather than negative constraints
+          principle: "Tell the model what TO do rather than what NOT to do [cite: 370-386]"
+          cost_impact: "Positive instructions often require fewer iterations"
+          when_to_use_constraints:
+            - "Safety requirements"
+            - "Legal compliance"
+            - "Strict format needs"
+          notes:
+            - Positive instructions can be more effective and flexible [cite: 375, 378]
+            - Constraints valuable for preventing harmful content [cite: 379, 380]
+
+    - name: Advanced Integration
+      description: "Complex combinations and specialized applications"
+      techniques:
+        - name: Combined Prompting Techniques
+          purpose: Leveraging multiple strategies within single interaction
+          meta_pattern_template: |
+            SYSTEM: [Behavior rules, overall purpose] [cite: 124]
+            ROLE: [Specific persona, e.g., "You are an expert physicist"] [cite: 127]
+            CONTEXT: [Background: "The experiment failed due to X..."] [cite: 125]
+            EXAMPLES: [Few-shot: Example 1 problem & solution...] [cite: 101]
+            REASONING_TRIGGER: [Chain of Thought: "Explain your reasoning step-by-step."] [cite: 190]
+            TASK: [Specific instruction: "Propose three alternative solutions..."]
+            OUTPUT_FORMAT: [Structure: "Provide your answer in JSON format with keys 'solution_name', 'rationale', 'potential_issues'."] [cite: 142]
+            VALIDATION_CUE: [Self-check: "Before finalizing, double-check that your response addresses all parts..."]
+          cost_optimized_selection:
+            simple_tasks: "Zero-shot + System prompting"
+            medium_complexity: "Few-shot + CoT"
+            high_stakes: "Self-Consistency + Human review"
+            complex_reasoning: "ToT (if budget allows) or ReAct + tools"
+
+        - name: RAG + Prompting Integration
+          purpose: Combining external knowledge retrieval with LLM reasoning
+          template: |
+            Context information:
+            [Retrieved document chunks]
+            
+            Using ONLY the information above, answer the following question.
+            Question: [User query]
+          usage_pattern: "Retrieved context is injected into prompt, which then might use CoT, ToT, etc."
+          best_practices:
+            - "Clearly separate retrieved context from instructions"
+            - "Specify how to handle missing information"
+            - "Consider chunk boundaries when designing prompts"
+          notes:
+            - Document RAG system specifics (query, chunk settings) if applicable [cite: 450]
+
+        - name: Multimodal Prompting
+          purpose: Using multiple input formats (text, images, audio, code)
+          examples:
+            - "Chain-of-Thought with images: 'Analyze this picture step by step: 1) Identify objects, 2) Describe relationships.'"
+            - "Role-based prompts for audio analysis: 'As a sound engineer, evaluate this recording.'"
+          dependency: "Depends on model's capabilities [cite: 348]"
+          best_practices:
+            - "Clearly specify how model should reference each modality"
+            - "Define expected response format for multimodal inputs"
+
+        - name: Prompt Guardrails & Safety
+          purpose: Ensuring responsible and safe LLM outputs
+          methods:
+            - "System prompts for respectful behavior [cite: 149, 150]"
+            - "Instructions to guide behavior and constraints to prevent harm [cite: 380, 386]"
+          example_guardrail: |
+            Analyze this financial scenario and recommend investment options.
+            Important constraints:
+            1. Only suggest regulated investment products
+            2. Include risk disclosures for all recommendations
+            3. Do not make specific return predictions
+            4. Clarify that this is not financial advice
+
+        - name: Automatic Prompt Engineering (APE)
+          purpose: Using LLMs to generate, evaluate, and refine prompts
+          methods:
+            - "Prompt an LLM to generate prompt variants for a task [cite: 282]"
+            - "Evaluate candidates using metrics (BLEU, ROUGE) or model-based evaluation [cite: 286]"
+            - "Select the highest-scoring or best-performing prompt [cite: 288]"
+          benefit: "Scales experimentation and can uncover novel prompt styles"
+
+    - name: Application-Specific Patterns
+      description: "Domain-tailored prompt engineering strategies"
+      categories:
+        - name: Code Applications
+          combo_description: "For generating, explaining, translating, or debugging code"
+          relevant_techniques: ["System Prompting", "Role Prompting", "Few-shot (with code examples)", "Chain of Thought (for logic breakdown)", "Structured Output (code blocks)", "LLM for Debugging"]
+          cost_optimization: "Use simpler prompts for syntax tasks, complex reasoning for architecture"
+          common_failures: ["Outdated libraries", "Security vulnerabilities", "Incomplete error handling"]
+          evaluation_methods: ["Code compilation", "Test coverage", "Security scanning"]
+          example_template: |
+            I need to write a function that identifies potential duplicate customer records in a database.
+            Before coding, take a step back and consider:
+            1. What defines a "potential duplicate"?
+            2. What edge cases should be handled?
+            3. What performance considerations matter for 100k+ records?
+            Then, think through your solution step by step before providing code.
+
+        - name: Content Creation & Summarization
+          combo_description: "For drafting articles, stories, summaries, or marketing copy"
+          relevant_techniques: ["Role Prompting", "Contextual Prompting", "Few-shot (style examples)", "Step-back (for broader themes)", "Specific Output Instructions (length, paragraphs)", "System Prompting (for tone)"]
+          model_selection: "GPT for creativity, Claude for balanced tone, Gemini for factual content"
+          evaluation_methods: ["Readability scores", "Fact-checking", "Audience appropriateness"]
+          example_template: |
+            As an experienced financial journalist for The Economist, write an article analyzing the recent central bank interest rate decision.
+
+        - name: Complex Reasoning & Decision Support
+          combo_description: "For tasks requiring analysis, problem-solving, or evaluation"
+          relevant_techniques: ["Chain of Thought", "Self-Consistency", "Tree of Thoughts", "Step-back Prompting", "ReAct", "Contextual Prompting (with data)", "Structured Output (e.g., JSON for comparisons)"]
+          cost_considerations: "High-value decisions justify expensive techniques"
+          evaluation_methods: ["Logic validation", "Stakeholder review", "Outcome tracking"]
+          example_template: |
+            Should our company expand into the Southeast Asian market?
+            Consider three different analytical frameworks: PESTEL, resource-based view, and scenario planning. For each, analyze the decision thoroughly, then synthesize into a final recommendation.
+
+        - name: Information Extraction & Classification
+          combo_description: "For parsing data from text or categorizing inputs"
+          relevant_techniques: ["Few-shot (with examples of extraction/classification)", "System Prompting (for output format/labels)", "JSON Output", "Contextual Prompting (with source text)"]
+          cost_optimization: "Batch processing, caching common extractions"
+          evaluation_methods: ["Precision", "Recall", "F1-score", "Manual spot-checks"]
+
+        - name: Educational Explanations
+          combo_description: "For creating clear explanations and learning materials"
+          recommended_techniques: ["Analogy-based prompting", "Chain-of-Thought"]
+          example_template: |
+            Explain how neural networks learn through backpropagation as if it were a team learning to play basketball. Step by step, describe the process, referring back to the analogy at each stage.
+
+        - name: Research Analysis
+          combo_description: "For synthesizing information and generating insights"
+          recommended_techniques: ["Step-back prompting", "Self-consistent approaches"]
+          example_template: |
+            Analyze the potential impact of quantum computing on current encryption standards.
+            Before diving into specifics, step back and consider the fundamental principles and assumptions. Provide three independent analyses, then synthesize them into a final assessment.
+
+  failure_mode_diagnostics:
+    diagnostic_flowchart:
+      1: 
+        issue: "Output Format Issues"
+        actions: ["Check schema compliance", "Validate structure", "Review format specifications"]
+      2:
+        issue: "Reasoning Errors"
+        actions: ["Trace logical steps", "Check for circular reasoning", "Verify step-by-step progression"]
+      3:
+        issue: "Irrelevant Responses"
+        actions: ["Review context relevance", "Check role clarity", "Verify task understanding"]
+      4:
+        issue: "Inconsistent Results"
+        actions: ["Test with different temperatures", "Add more examples", "Check for ambiguous instructions"]
+      5:
+        issue: "Safety Violations"
+        actions: ["Strengthen system prompts", "Add explicit constraints", "Review guardrails"]
+
+  technique_selection_decision_framework: |
+    IF task_complexity == "simple" AND budget == "low":
+        USE zero_shot + system_prompting
+    ELIF task_complexity == "medium" AND accuracy_requirement == "high":
+        USE few_shot + chain_of_thought
+    ELIF task_complexity == "high" AND budget == "flexible":
+        USE self_consistency OR tree_of_thoughts
+    ELIF external_tools_needed:
+        USE react_framework
+    ELSE:
+        START with few_shot + chain_of_thought, ITERATE based on results
+
+  meta_framework_summary:
+    name: Unified Prompting Strategy (Iterative & Layered Approach)
+    description: A comprehensive approach starting with foundational techniques, layering context and reasoning, structuring output, and continuously enhancing through iterative optimization
+    phases:
+      1_foundation: "Start with clear base instructions (Zero/Few-shot)"
+      2_contextualization: "Add background, role, and system guidance"
+      3_reasoning: "Apply appropriate reasoning architecture for complexity"
+      4_output_structuring: "Define clear output format and validation"
+      5_implementation_tuning: "Configure parameters and optimize for cost/performance"
+      6_iteration_optimization: "Test, measure, refine, and explore advanced integrations"
+
+  best_practices_summary:
+    design_principles:
+      - "Design with simplicity: Clear, concise, easy to understand [cite: 356, 357]"
+      - "Be specific about the output: Guide model clearly on format, length, content [cite: 364, 365]"
+      - "Experiment with input formats and writing styles [cite: 397, 399]"
+      - "For few-shot classification, mix up class order in examples [cite: 402, 403, 404]"
+      - "Experiment together with other prompt engineers: Leverage diverse perspectives [cite: 433]"
+    
+    iteration_protocol:
+      1: "Start with baseline prompt and test on diverse inputs"
+      2: "Address failure cases with targeted improvements"
+      3: "Compare prompt variations and measure effectiveness"
+      4: "Verify edge cases and add safeguards where needed"
+      5: "Document successful patterns and failure modes"
+
+    success_criteria_definition:
+      - "Define what constitutes a good response before starting"
+      - "Match technique to task complexity"
+      - "Provide necessary context and constraints"
+      - "Specify output format clearly"
+      - "Iterate based on systematic evaluation"
+
+  version_notes:
+    - "Enhanced with cost-benefit analysis for each technique"
+    - "Added model-specific optimization guidelines"
+    - "Integrated failure mode diagnostics and troubleshooting"
+    - "Expanded evaluation framework with concrete metrics"
+    - "Added decision framework for technique selection"
+    - "Enhanced with practical implementation considerations"
